@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="90d47fdb-82b5-4bce-a691-ec6b23d6ed7a" >
+		<http:listener-connection host="localhost" port="8082" />
+	</http:listener-config>
+	<flow name="authenticationflowFlow" doc:id="fc620801-83f0-4e0c-a9d6-4214fb85beab" >
+		<http:listener doc:name="Listener" doc:id="34496154-94aa-4299-be0b-2a1880fdd6f8" config-ref="HTTP_Listener_config" path="/externalapi"/>
+		<logger level="INFO" doc:name="auth-flow-started" doc:id="87db1759-df66-4954-abfa-79905bb0199b" message="flow started"/>
+		<ee:transform doc:name="Transform Message" doc:id="635ca39b-7664-4400-bae1-a73df3334a16" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"token":"BASIC " ++ uuid(),
+	"expiry_intervals":60,
+	"token_type":"Bearer"
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+</mule>
